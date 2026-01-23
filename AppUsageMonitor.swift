@@ -1,24 +1,23 @@
-import Foundation
+import DeviceActivity
+import UserNotifications
 
-class AppUsageMonitor {
-    private var usageData: [String: TimeInterval] = [:]
-    private let threshold: TimeInterval = 600 // 10 minutes
-
-    // Track app usage
-    func trackAppUsage(appName: String, duration: TimeInterval) {
-        usageData[appName, default: 0] += duration
-        checkThreshold(appName: appName)
+// This class would typically be in a Device Activity Monitor Extension
+class AppUsageMonitor: DeviceActivityMonitor {
+    
+    override func eventDidReachThreshold(_ event: DeviceActivityEvent.Name, activity: DeviceActivityName) {
+        super.eventDidReachThreshold(event, activity: activity)
+        
+        // This is called when the 10-minute limit is reached
+        NotificationManager.shared.sendLimitAlert(for: "your selected apps")
     }
-
-    // Check if the usage exceeds threshold
-    private func checkThreshold(appName: String) {
-        if let totalUsage = usageData[appName], totalUsage > threshold {
-            alertUser(appName: appName)
-        }
+    
+    override func intervalDidStart(for activity: DeviceActivityName) {
+        super.intervalDidStart(for: activity)
+        // Handle interval start if needed
     }
-
-    // Alert the user
-    private func alertUser(appName: String) {
-        print("Alert: You have exceeded the usage limit for \(appName)!")
+    
+    override func intervalDidEnd(for activity: DeviceActivityName) {
+        super.intervalDidEnd(for: activity)
+        // Handle interval end if needed
     }
 }
